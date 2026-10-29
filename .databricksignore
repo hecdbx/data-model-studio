@@ -1,0 +1,14 @@
+# Only the compiled build/ output ships — exclude frontend source and local envs.
+frontend/
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.DS_Store
+.vscode/
+.idea/
+.git/
+.databricks/
+demo_data/

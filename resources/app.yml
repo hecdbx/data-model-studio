@@ -1,0 +1,36 @@
+resources:
+  apps:
+    data_model_studio:
+      name: data-model-studio
+      description: >-
+        Data Model Studio — design ER diagrams with a drag-and-drop editor,
+        reverse-engineer them from Unity Catalog schemas and Lakeflow pipelines,
+        edit them, and let a Claude Opus 5 agent generate the UC DDL/DML or an
+        updated Spark Declarative Pipeline.
+      source_code_path: ..
+
+      # On-behalf-of-user authorization: lets the app read pipeline notebook
+      # source with the logged-in user's token (X-Forwarded-Access-Token) when
+      # the app service principal can't. Pipeline notebooks usually live in a
+      # user's workspace folder, so this is needed to infer FKs from them.
+      user_api_scopes:
+        - workspace.workspace
+
+      # Binding resources here grants the app's service principal the
+      # permissions it needs and makes the ids discoverable at runtime.
+      resources:
+        - name: agent_model
+          description: Foundation-model endpoint the agent queries.
+          serving_endpoint:
+            name: ${var.serving_endpoint}
+            permission: CAN_QUERY
+        - name: sql_warehouse
+          description: Warehouse for Unity Catalog introspection + read_files().
+          sql_warehouse:
+            id: ${var.warehouse_id}
+            permission: CAN_USE
+        - name: apply_job
+          description: Job the app triggers to apply generated DDL / DML.
+          job:
+            id: ${resources.jobs.apply_job.id}
+            permission: CAN_MANAGE_RUN

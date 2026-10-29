@@ -1,0 +1,53 @@
+/* Diagram surfaces stay quiet so the relationships carry the picture. */
+.react-flow__attribution { display: none; }
+.react-flow { background: transparent; --xy-background-color: transparent; }
+.react-flow__controls { display: flex; flex-direction: row; overflow: hidden; margin: 16px; border: 1px solid var(--db-border); border-radius: 8px; box-shadow: var(--sh-sm); }
+.react-flow__controls-button { width: 31px; height: 31px; border: 0; border-right: 1px solid var(--db-border); background: var(--surface); color: var(--text-secondary); }
+.react-flow__controls-button:last-child { border: 0; }
+.react-flow__controls-button:hover { background: var(--bg-sunken); color: var(--text); }
+.react-flow__controls-button svg { width: 12px; height: 12px; fill: currentColor; }
+.react-flow__minimap { margin: 15px; border: 1px solid var(--db-border); border-radius: 9px; background: var(--surface); box-shadow: var(--sh-sm); overflow: hidden; }
+.enode { position: relative; width: 264px; border: 1px solid var(--db-border-strong); border-radius: 10px; background: var(--surface); box-shadow: var(--sh-md); font-size: 11px; transition: border-color var(--dur-fast), box-shadow var(--dur-fast); }
+.enode:hover { border-color: var(--layer); box-shadow: var(--sh-md); }
+.enode.selected { border-color: var(--selection); box-shadow: 0 0 0 3px color-mix(in srgb, var(--selection) 16%, transparent), var(--sh-md); }
+.enode.dim { opacity: 0.4; }
+.react-flow__node:focus-visible { outline: 2px solid var(--ring); border-radius: 10px; }
+.enode-head { position: relative; display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 12px; border-bottom: 1px solid var(--db-border); border-radius: 9px 9px 0 0; background: color-mix(in srgb, var(--layer) 4%, var(--surface)); }
+.enode-head::before { position: absolute; content: ''; top: 10px; bottom: 10px; left: -1px; width: 3px; border-radius: 0 3px 3px 0; background: var(--layer); }
+.enode-head .eglyph { display: grid; place-items: center; color: var(--layer); }
+.enode-head .etitle { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 600; letter-spacing: -0.01em; }
+.enode-head .elayer { padding: 2px 5px; border: 1px solid color-mix(in srgb, var(--layer) 22%, var(--db-border)); border-radius: 4px; background: color-mix(in srgb, var(--layer) 5%, var(--surface)); color: var(--layer); font-size: 8px; line-height: 1.5; }
+.enode-schema { display: flex; align-items: center; gap: 4px; height: 20px; padding: 3px 12px 0; color: var(--text-muted); font-size: 9px; }
+.enode-schema .icon { width: 9px; height: 9px; }
+.enode-cols { padding: 5px 0; border-radius: 0 0 9px 9px; background: var(--surface); }
+.ecol { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; align-items: center; gap: 7px; height: 22px; padding: 0 12px; }
+.ecol:hover { background: var(--surface-2); }
+.ecol > span:first-child { display: grid; place-items: center; }
+.ecol .kbadge { display: grid; place-items: center; width: 18px; height: 14px; border-radius: 3px; font-size: 7px; line-height: 1; font-weight: 600; }
+.ecol .kbadge.pk { color: var(--db-warning); background: color-mix(in srgb, var(--db-warning) 10%, var(--surface)); }
+.ecol .kbadge.fk { color: var(--db-info); background: color-mix(in srgb, var(--db-info) 9%, var(--surface)); }
+.ecol .column-dot { width: 3px; height: 3px; background: var(--db-border-strong); border-radius: 50%; }
+.ecol .cname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-secondary); font-size: 11.5px; }
+.ecol.is-pk .cname { font-weight: 550; color: var(--text); }
+.ecol .ctype { font-family: var(--mono); font-size: 9px; color: var(--text-muted); text-transform: lowercase; }
+.ecol-more { height: 20px; padding: 2px 12px; color: var(--text-muted); text-align: center; font-size: 9px; line-height: 16px; }
+.enode-cols > .ecol-more:only-child { height: 22px; }
+.enode .react-flow__handle { width: 9px; height: 9px; border: 2px solid var(--layer); background: var(--surface); opacity: 0.7; transition: opacity var(--dur-fast), width var(--dur-fast), height var(--dur-fast); }
+.enode:hover .react-flow__handle, .enode.selected .react-flow__handle { opacity: 1; width: 11px; height: 11px; }
+.react-flow__handle.connecting { border-color: var(--selection); background: var(--selection-soft); }
+.react-flow__edge-path { stroke: var(--edge); stroke-width: 1.8; }
+.react-flow__edge:hover .react-flow__edge-path, .react-flow__edge.selected .react-flow__edge-path { stroke: var(--selection); stroke-width: 2.4; }
+.react-flow__edge-text { fill: var(--edge-label); font-family: var(--mono); font-weight: 500; font-size: 10px; }
+.react-flow__edge-textbg { fill: var(--surface); }
+.react-flow__edge:hover .react-flow__edge-text, .react-flow__edge.selected .react-flow__edge-text { fill: var(--selection); }
+.react-flow__edge .react-flow__edge-textwrapper { pointer-events: all; }
+/* relationship cardinality beside each table: 1 or ∞ */
+.rel-end { fill: var(--edge-label); font-family: var(--mono); font-size: 11px; font-weight: 600; paint-order: stroke; stroke: var(--canvas-bg); stroke-width: 3px; stroke-linejoin: round; pointer-events: none; }
+.react-flow__edge:hover .rel-end, .react-flow__edge.selected .rel-end { fill: var(--selection); }
+@container canvas (max-width: 620px) {
+  .react-flow__minimap { display: none; }
+}
+@media (pointer: coarse) {
+  .enode .react-flow__handle { width: 13px; height: 13px; }
+  .react-flow__controls-button { width: 37px; height: 37px; }
+}

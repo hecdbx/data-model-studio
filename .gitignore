@@ -1,0 +1,32 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+*.egg-info/
+
+# Node / frontend
+frontend/node_modules/
+frontend/.vite/
+
+# Databricks
+.databricks/
+*.log
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Local scratch
+/tmp/
+
+# Local test artifacts
+mlflow.db
+mlruns/
+
+# Generated artifacts (rebuild with `npm run build` / demo_data/tawal/generate_tawal.py)
+build/
+demo_data/tawal/out/

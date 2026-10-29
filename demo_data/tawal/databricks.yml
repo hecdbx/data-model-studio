@@ -1,0 +1,97 @@
+bundle:
+  name: tawal-demo-data
+
+# Tawal synthetic medallion pipelines used to exercise Data Model Studio:
+# bronze (Auto Loader, metadata-driven Python) → silver (SQL + Python) → gold
+# (star schema, Python DataFrame joins + spark.sql). Each uses a `glob` library
+# like pipelines created in the Lakeflow Pipelines Editor.
+
+variables:
+  catalog:
+    default: hec_demo_catalog
+
+sync:
+  exclude:
+    - out/**
+    - sql/**
+    - scripts/**
+    - generate_tawal.py
+
+resources:
+  pipelines:
+    tawal_bronze:
+      name: tawal-bronze-ingest
+      catalog: ${var.catalog}
+      schema: tawal_bronze
+      serverless: true
+      root_path: ./pipelines/bronze
+      libraries:
+        - glob:
+            include: ./pipelines/bronze/transformations/**
+      configuration:
+        tawal.landing_path: /Volumes/${var.catalog}/tawal_raw/landing
+
+    tawal_silver:
+      name: tawal-silver
+      catalog: ${var.catalog}
+      schema: tawal_silver
+      serverless: true
+      root_path: ./pipelines/silver
+      libraries:
+        - glob:
+            include: ./pipelines/silver/transformations/**
+      configuration:
+        tawal.bronze_schema: ${var.catalog}.tawal_bronze
+
+    tawal_gold:
+      name: tawal-gold
+      catalog: ${var.catalog}
+      schema: tawal_gold
+      serverless: true
+      root_path: ./pipelines/gold
+      libraries:
+        - glob:
+            include: ./pipelines/gold/transformations/**
+      configuration:
+        tawal.catalog: ${var.catalog}
+
+    # Runs the SDP code Data Model Studio generates for a model seeded from the
+    # landing volume — proves the generated pipeline works as-is.
+    tawal_generated_check:
+      name: tawal-generated-sdp-check
+      catalog: ${var.catalog}
+      schema: tawal_generated
+      serverless: true
+      root_path: ./pipelines/generated
+      libraries:
+        - glob:
+            include: ./pipelines/generated/transformations/**
+      configuration:
+        target_catalog: ${var.catalog}
+        target_schema: tawal_generated
+        source_volume_path: /Volumes/${var.catalog}/tawal_raw/landing
+
+  jobs:
+    tawal_medallion_refresh:
+      name: tawal-medallion-refresh
+      tasks:
+        - task_key: bronze
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.tawal_bronze.id}
+        - task_key: silver
+          depends_on:
+            - task_key: bronze
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.tawal_silver.id}
+        - task_key: gold
+          depends_on:
+            - task_key: silver
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.tawal_gold.id}
+
+targets:
+  hec:
+    default: true
+    workspace:
+      host: https://fevm-hec-demo.cloud.databricks.com
+      profile: fevm-hec-demo

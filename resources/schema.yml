@@ -1,0 +1,14 @@
+resources:
+  schemas:
+    studio_schema:
+      catalog_name: ${var.target_catalog}
+      name: ${var.target_schema}
+      comment: "Working schema for Data Model Studio — holds generated artifacts and embedded agent skills."
+
+  volumes:
+    artifacts_volume:
+      catalog_name: ${var.target_catalog}
+      schema_name: ${resources.schemas.studio_schema.name}
+      name: ${var.artifacts_volume}
+      volume_type: MANAGED
+      comment: "Generated DDL/DML + Spark Declarative Pipeline artifacts, and embedded data-modeling agent skills."

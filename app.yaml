@@ -1,0 +1,44 @@
+# Databricks Apps runtime configuration.
+# The app serves the compiled React frontend (build/) and a FastAPI backend.
+# On first run the backend bootstraps its own Unity Catalog schema + volume + job
+# (see backend/bootstrap.py) — the "self-contained" behaviour.
+# Databricks Apps assigns the port via DATABRICKS_APP_PORT (usually 8000) and the
+# app MUST bind to it, so read it from the env rather than hard-coding.
+command:
+  - "sh"
+  - "-c"
+  - "exec python -m uvicorn backend.main:app --host 0.0.0.0 --port ${DATABRICKS_APP_PORT:-8000}"
+
+env:
+  # ── Foundation model (agent) ─────────────────────────────────────
+  - name: SERVING_ENDPOINT
+    description: "Foundation-model serving endpoint for the data-modeling agent (Claude Opus 5 hosted on Databricks)."
+    value: "databricks-claude-opus-5"
+
+  # ── SQL warehouse used for information_schema + read_files() ─────
+  # Bind a SQL warehouse resource to the app (recommended) OR set the id here.
+  - name: WAREHOUSE_ID
+    description: "SQL warehouse id for Unity Catalog introspection and file sampling. Leave blank to auto-pick a running serverless warehouse."
+    value: ""
+
+  # ── Self-provisioning target (schema/volume/job live here) ───────
+  - name: TARGET_CATALOG
+    description: "Catalog the app provisions its working schema/volume into on first run. The app SP needs USE CATALOG + CREATE SCHEMA here."
+    value: "hec_demo_catalog"
+  - name: TARGET_SCHEMA
+    description: "Schema the app creates (idempotent) for its artifacts and generated assets."
+    value: "data_model_studio"
+  - name: ARTIFACTS_VOLUME
+    description: "Managed volume (inside TARGET_SCHEMA) where generated DDL/pipeline artifacts and embedded agent skills are stored."
+    value: "artifacts"
+  - name: EXEC_JOB_NAME
+    description: "Name of the Databricks Job the app ensures exists to execute generated DDL / run generated pipelines."
+    value: "data_model_studio_apply"
+
+  # ── Behaviour ────────────────────────────────────────────────────
+  - name: AUTO_BOOTSTRAP
+    description: "If 'true', run self-provisioning automatically on startup. If 'false', provisioning happens only when the user clicks Set up in the UI."
+    value: "true"
+  - name: AGENT_MAX_TOKENS
+    description: "Max output tokens for the agent."
+    value: "32000"

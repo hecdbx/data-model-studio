@@ -1,0 +1,24 @@
+resources:
+  jobs:
+    apply_job:
+      name: ${var.target_schema}_apply
+      description: >-
+        Applies generated Unity Catalog DDL/DML produced by Data Model Studio.
+        The app writes a .sql artifact to the artifacts volume and triggers this
+        job with `artifact_path` pointing at it.
+      tags:
+        app: data-model-studio
+      max_concurrent_runs: 5
+      parameters:
+        - name: artifact_path
+          default: ""
+        - name: mode
+          default: sql
+      tasks:
+        - task_key: apply
+          notebook_task:
+            notebook_path: ../backend/jobs/apply_notebook.py
+            base_parameters:
+              artifact_path: "{{job.parameters.artifact_path}}"
+              mode: "{{job.parameters.mode}}"
+          # No cluster specified → runs on serverless compute.

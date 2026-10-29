@@ -1,0 +1,75 @@
+bundle:
+  name: data-model-studio
+
+# ─────────────────────────────────────────────────────────────────────
+# Data Model Studio — a self-contained Databricks App for data modeling.
+#   • Feature 1: drag-and-drop ER designer + agent (Opus 5) → DDL/DML + SDP
+#   • Feature 2: reverse-engineer ER diagrams from Unity Catalog schemas
+#     (+ optional Lakeflow pipelines), edit them, and regenerate DML / SDP.
+#
+# `databricks bundle deploy` provisions everything below (app, job, schema,
+# volume). The app ALSO self-provisions the schema/volume/job idempotently on
+# first run (backend/bootstrap.py) so it works even when re-run as its own
+# service principal.
+# ─────────────────────────────────────────────────────────────────────
+
+include:
+  - resources/*.yml
+
+variables:
+  serving_endpoint:
+    description: Foundation-model endpoint for the agent (Claude Opus 5).
+    default: databricks-claude-opus-5
+  target_catalog:
+    description: Catalog the app provisions its working schema/volume into.
+    default: houssem_demo_catalog
+  target_schema:
+    description: Working schema created by the app for its artifacts/assets.
+    default: data_model_studio
+  artifacts_volume:
+    description: Managed volume for generated artifacts and embedded agent skills.
+    default: artifacts
+  warehouse_id:
+    description: SQL warehouse id for information_schema + read_files(). Used to grant the app SP CAN_USE. The app also auto-picks a running serverless warehouse at runtime if this is unset.
+    default: a5d90a328e4020f7
+
+sync:
+  exclude:
+    - frontend/node_modules/**
+    - frontend/src/**
+    - frontend/public/**
+    - frontend/package.json
+    - frontend/package-lock.json
+    - frontend/vite.config.js
+    - frontend/index.html
+    - "**/__pycache__/**"
+    - "**/*.pyc"
+    - tests/**
+    - demo_data/**
+    - .pytest_cache/**
+    - .DS_Store
+    - .vscode/**
+    - .venv/**
+
+targets:
+  hec:
+    default: true
+    mode: development
+    workspace:
+      host: https://fevm-hec-demo.cloud.databricks.com
+      profile: fevm-hec-demo
+    variables:
+      target_catalog: hec_demo_catalog
+      warehouse_id: 3cdad602e9d7f4c7
+
+  dev:
+    mode: development
+    workspace:
+      host: https://fevm-houssem-demo.cloud.databricks.com
+      profile: fe-vm-houssem-demo
+
+  prod:
+    mode: production
+    workspace:
+      host: https://fevm-houssem-demo.cloud.databricks.com
+      profile: fe-vm-houssem-demo

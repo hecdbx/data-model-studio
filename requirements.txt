@@ -1,0 +1,11 @@
+# Backend runtime dependencies for Data Model Studio (Databricks App).
+# All data access goes through the Databricks SDK + a SQL warehouse (statement
+# execution + read_files), so no databricks-connect / Spark client is needed.
+# The agent talks to the model via the SDK's OpenAI-compatible client, so no
+# langchain / databricks-langchain (which pull an mcp transitive that breaks in
+# the Apps runtime).
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+databricks-sdk>=0.44.0
+openai>=1.40.0
+pydantic>=2.6.0
